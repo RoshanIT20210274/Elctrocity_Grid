@@ -45,10 +45,12 @@ public class Complain {
 			 
 			 preparedStmt.execute(); 
 			 con.close(); 
-			 output = "Inserted successfully"; 
+				String newUse = readComplain();
+				output = "{\"status\":\"success\", \"data\": \"" +newUse+ "\"}";
+
 		}
 		catch (Exception e) {
-			 output = "Error while inserting the Complain."; 
+			output = "{\"status\":\"error\", \"data\":\"Error while inserting the Users.\"}";
 			 System.err.println(e.getMessage()); 
 		}
 		
@@ -68,9 +70,9 @@ public class Complain {
 			}
 			
 			 // Prepare the html table to be displayed
-			 output = "<table border='1'><tr><th>Complain ID</th><th>Complain</th><th>Date</th>" +
+			 output = "<table class='table table-hover'><tr><th>Complain ID</th><th>Complain</th><th>Date</th>" +
 			 "<th>Complain Type</th>" + 
-			 "<th>NIC</th></tr>";
+			 "<th>NIC</th><th>Update</th><th>Remove</th></tr>";
 			 
 			 String query = "select * from complain"; 
 			 Statement stmt = con.createStatement(); 
@@ -84,11 +86,16 @@ public class Complain {
 				 String nic = rs.getString("nic"); 
 				 
 				 // Add into the html table
-				 output += "<tr><td>" + idcomplain + "</td>"; 
+				 output += "<tr><td><input id='hididUpdate' name='hididUpdate' type='hidden' value='" + idcomplain
+							+ "'>" + idcomplain + "</td>";
 				 output += "<td>" + name + "</td>"; 
 				 output += "<td>" + date + "</td>"; 
 				 output += "<td>" + complaintype + "</td>"; 
 				 output += "<td>" + nic + "</td>";
+				// buttons
+					output += "<td><input name='btnUpdate' type='button' value='Update' class='btnUpdate btn btn-secondary'></td>"
+							+ "<td><input name='btnRemove' type='button' value='Remove' class='btnRemove btn btn-danger' data-itemid='"
+							+ idcomplain + "'>" + "</td></tr>";
 				 
 			 }
 			 con.close(); 
@@ -125,11 +132,13 @@ public class Complain {
 		 // execute the statement
 		 preparedStmt.execute(); 
 		 con.close(); 
-		 output = "Updated successfully"; 
+		 String newUse =readComplain();
+			output = "{\"status\":\"success\", \"data\": \"" +newUse+ "\"}";
+		 
 		 } 
 		 catch (Exception e) 
 		 { 
-		 output = "Error while updating the complain details."; 
+			 output = "{\"status\":\"error\", \"data\": \"Error while updating the user.\"}";
 		 System.err.println(e.getMessage()); 
 		 } 
 		 return output; 
@@ -151,11 +160,12 @@ public class Complain {
 	 // execute the statement
 	 preparedStmt.execute(); 
 	 con.close(); 
-	 output = "Deleted successfully"; 
+	 String newUse = readComplain();
+		output = "{\"status\":\"success\", \"data\": \"" +newUse + "\"}";
 	 } 
 	 catch (Exception e) 
 	 { 
-	 output = "Error while deleting the Complain Details"; 
+		 output = "{\"status\":\"error\", \"data\":\"Error while deleting the user.\"}";
 	 System.err.println(e.getMessage()); 
 	 } 
 	 return output; 
