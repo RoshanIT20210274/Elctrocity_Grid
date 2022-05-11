@@ -2,8 +2,7 @@ package model;
 
 import java.sql.*; 
 
-public class Complain {
-	
+public class User {
 	private Connection connect()
 	{
 			Connection con = null;
@@ -19,7 +18,7 @@ public class Complain {
 			return con;
 	}
 	
-	public String insertComplain(String name, String date, String complaintype, String nic) {
+	public String insertUser(String name, String nic, String password) {
 		
 		String output = "";
 		
@@ -30,34 +29,32 @@ public class Complain {
 			{return  "Error while connecting to the database for inserting.";}
 			
 			// create a prepared statement
-			String query = "  insert into complain (`idcomplain`,`name`,`date`,`complaintype`,`nic`)" + " values (?, ?, ?, ?,?)";
+			String query = "  insert into user (`iduser`,`name`,`nic`,`password`)" + " values (?, ?, ?, ?)";
 			
 			PreparedStatement preparedStmt = con.prepareStatement(query);
 			
 			 // binding values
 			 preparedStmt.setInt(1, 0); 
 			 preparedStmt.setString(2, name); 
-			 preparedStmt.setString(3, date); 
-			 preparedStmt.setString(4, complaintype); 
-			 preparedStmt.setString(5, nic); 
+			 preparedStmt.setString(3, nic); 
+			 preparedStmt.setString(4, password); 
+		
 			 
 			// execute the statement
 			 
 			 preparedStmt.execute(); 
 			 con.close(); 
-				String newUse = readComplain();
-				output = "{\"status\":\"success\", \"data\": \"" +newUse+ "\"}";
-
+			 output = "Inserted successfully"; 
 		}
 		catch (Exception e) {
-			output = "{\"status\":\"error\", \"data\":\"Error while inserting the Users.\"}";
+			 output = "Error while inserting the Complain."; 
 			 System.err.println(e.getMessage()); 
 		}
 		
 		return output;
 	}
 	
-	public String readComplain() {
+	public String readUser() {
 		
 		String output = "";
 		
@@ -70,32 +67,26 @@ public class Complain {
 			}
 			
 			 // Prepare the html table to be displayed
-			 output = "<table class='table table-hover'><tr><th>Complain ID</th><th>Complain</th><th>Date</th>" +
-			 "<th>Complain Type</th>" + 
-			 "<th>NIC</th><th>Update</th><th>Remove</th></tr>";
+			 output = "<table border='1'><tr><th>User ID</th><th>Name</th><th>NIC</th>" +
+			 "<th>Password</th>";
 			 
-			 String query = "select * from complain"; 
+			 String query = "select * from user"; 
 			 Statement stmt = con.createStatement(); 
 			 ResultSet rs = stmt.executeQuery(query); 
 			 
 			 while(rs.next()) {
-				 String idcomplain = Integer.toString(rs.getInt("idcomplain")); 
+				 String iduser = Integer.toString(rs.getInt("iduser")); 
 				 String name = rs.getString("name"); 
-				 String date = rs.getString("date"); 
-				 String complaintype = rs.getString("complaintype"); 
 				 String nic = rs.getString("nic"); 
+				 String password = rs.getString("password"); 
+				
 				 
 				 // Add into the html table
-				 output += "<tr><td><input id='hididUpdate' name='hididUpdate' type='hidden' value='" + idcomplain
-							+ "'>" + idcomplain + "</td>";
+				 output += "<tr><td>" + iduser + "</td>"; 
 				 output += "<td>" + name + "</td>"; 
-				 output += "<td>" + date + "</td>"; 
-				 output += "<td>" + complaintype + "</td>"; 
-				 output += "<td>" + nic + "</td>";
-				// buttons
-					output += "<td><input name='btnUpdate' type='button' value='Update' class='btnUpdate btn btn-secondary'></td>"
-							+ "<td><input name='btnRemove' type='button' value='Remove' class='btnRemove btn btn-danger' data-itemid='"
-							+ idcomplain + "'>" + "</td></tr>";
+				 output += "<td>" + nic + "</td>"; 
+				 output += "<td>" + password + "</td>"; 
+				
 				 
 			 }
 			 con.close(); 
@@ -111,7 +102,7 @@ public class Complain {
 		return output;
 	}
 	
-	public String updateComplain(String idcomplain,String name, String date, String complaintype, String nic) 
+	public String updateUser(String iduser,String name, String nic, String password) 
 	{ 
 		 String output = ""; 
 		 try
@@ -120,31 +111,28 @@ public class Complain {
 		 if (con == null) 
 		 {return "Error while connecting to the database for updating."; } 
 		 // create a prepared statement
-		 String query = "UPDATE complain SET name=?,date=?,complaintype=?,nic=? WHERE idcomplain=?"; 
+		 String query = "UPDATE user SET name=?,nic=?,password=? WHERE iduser=?"; 
 		 PreparedStatement preparedStmt = con.prepareStatement(query); 
 		 // binding values
 		 preparedStmt.setString(1, name); 
-		 preparedStmt.setString(2, date); 
-		 preparedStmt.setString(3, complaintype); 
-		 preparedStmt.setString(4, nic); 
-		 preparedStmt.setInt(5, Integer.parseInt(idcomplain)); 
+		 preparedStmt.setString(2, nic); 
+		 preparedStmt.setString(3, password); 
+		 preparedStmt.setInt(5, Integer.parseInt(iduser)); 
 
 		 // execute the statement
 		 preparedStmt.execute(); 
 		 con.close(); 
-		 String newUse =readComplain();
-			output = "{\"status\":\"success\", \"data\": \"" +newUse+ "\"}";
-		 
+		 output = "Updated successfully"; 
 		 } 
 		 catch (Exception e) 
 		 { 
-			 output = "{\"status\":\"error\", \"data\": \"Error while updating the user.\"}";
+		 output = "Error while updating the user details."; 
 		 System.err.println(e.getMessage()); 
 		 } 
 		 return output; 
 		 } 
 	
-	public String deleteComplain(String idcomplain) 
+	public String deleteUser(String iduser) 
 	 { 
 	 String output = ""; 
 	 try
@@ -153,21 +141,21 @@ public class Complain {
 	 if (con == null) 
 	 {return "Error while connecting to the database for deleting."; } 
 	 // create a prepared statement
-	 String query = "delete from complain where idcomplain=?"; 
+	 String query = "delete from user where iduser=?"; 
 	 PreparedStatement preparedStmt = con.prepareStatement(query); 
 	 // binding values
-	 preparedStmt.setInt(1, Integer.parseInt(idcomplain)); 
+	 preparedStmt.setInt(1, Integer.parseInt(iduser)); 
 	 // execute the statement
 	 preparedStmt.execute(); 
 	 con.close(); 
-	 String newUse = readComplain();
-		output = "{\"status\":\"success\", \"data\": \"" +newUse + "\"}";
+	 output = "Deleted successfully"; 
 	 } 
 	 catch (Exception e) 
 	 { 
-		 output = "{\"status\":\"error\", \"data\":\"Error while deleting the user.\"}";
+	 output = "Error while deleting the Complain Details"; 
 	 System.err.println(e.getMessage()); 
 	 } 
 	 return output; 
 	 }
+
 }
